@@ -39,7 +39,7 @@ add_custom_command(
         $$\( echo '$<TARGET_PROPERTY:swift-pico,INCLUDE_DIRECTORIES>' | tr '\;' '\\n' | sed -e 's/\\\(.*\\\)/-Xcc -I\\1/g' \)
         $$\( echo '${CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES}' | tr ' ' '\\n' | sed -e 's/\\\(.*\\\)/-Xcc -I\\1/g' \)
         -import-bridging-header ${CMAKE_CURRENT_LIST_DIR}/BridgingHeader.h
-        ${CMAKE_CURRENT_LIST_DIR}/Main.swift
+        ${CMAKE_CURRENT_LIST_DIR}/*.swift
         -c -o ${CMAKE_CURRENT_BINARY_DIR}/_swiftcode.o
     DEPENDS
         ${CMAKE_CURRENT_LIST_DIR}/BridgingHeader.h
