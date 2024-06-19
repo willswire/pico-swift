@@ -12,6 +12,9 @@ brew install cmake ninja
 # set up all git submodules
 git submodule update --init
 
+# set up creds (this file is ignored)
+cp Credentials.swift.tpl Credentials.swift
+
 # build commands
 cmake -B build -G Ninja .
 cmake --build build

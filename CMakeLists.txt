@@ -55,9 +55,12 @@ target_link_libraries(swift-pico
     hardware_uart
     hardware_gpio
     pico_lwip_arch
-    pico_cyw43_arch_none
+    pico_cyw43_arch_lwip_threadsafe_background
     ${CMAKE_CURRENT_BINARY_DIR}/_swiftcode.o
 )
+
+# Include local lwipopts
+include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 
 # Ensure the Swift code is compiled before linking the executable
 add_dependencies(swift-pico swift-pico-swiftcode)

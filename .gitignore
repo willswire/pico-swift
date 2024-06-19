@@ -1,1 +1,5 @@
+# build artifacts
 build/
+
+# credentials file
+Credentials.swift
