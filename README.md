@@ -41,4 +41,10 @@ To exit your Screen session completely[^1]:
 - A confirmation to quit screen will show up in the bottom left corner of Terminal
 - You are now back in your regular Terminal command line.
 
+## helpful links
+
+- [Networking Libraries](https://www.raspberrypi.com/documentation/pico-sdk/networking.html#pico_cyw43_arch)
+- [Getting started with Pico](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf)
+- [Swift Forums discussion on example projects](https://forums.swift.org/t/embedded-swift-example-projects-for-arm-and-risc-v-microcontrollers/71066/30)
+
 [^1]: [Using Screen - Mac / Linux](https://ssg-drd-iot.github.io/getting-started-guides/docs/shell_access/mac-and-linux/using_screen.html)
