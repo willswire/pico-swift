@@ -1,5 +1,6 @@
 struct Device {
-    var led: LED = LED()
+    var led: LED
+    var network: Network
 
     public enum SleepUnits {
         case sec, min
@@ -11,6 +12,9 @@ struct Device {
         if cyw43_arch_init() != 0 {
             fatalError("Unable to initialize the Wi-Fi module")
         }
+
+        self.led = LED()
+        self.network = Network()
     }
     
     public func sleep(duration: Int = 1, unit: SleepUnits = .sec) {
@@ -24,6 +28,23 @@ struct Device {
             break
         }
         sleep_ms(newDuration);
+    }
+}
+
+struct Network {
+    init() {
+        cyw43_arch_enable_sta_mode();
+    }
+
+    public func connect(ssid: StaticString, password: StaticString) {
+        print("Connecting to Wi-Fi...")
+        let err = cyw43_arch_wifi_connect_blocking(ssid.utf8Start, password.utf8Start, 0x00400004)
+
+        if err != 0 {
+            print("Failed to connect to Wi-Fi!")
+        } else {
+            print("Connected to Wi-Fi!")
+        }
     }
 }
 
