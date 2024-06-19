@@ -1,4 +1,4 @@
-# pico-swift
+# swift-pico
 
 this project is a playground for embedded swift on the rasberry pi pico w. the first experiment is to get wifi up and running on the pico, using as little of the c sdk as possible. this may require some reimplementation of the sdk from c in swift native. we'll see how that goes...
 
