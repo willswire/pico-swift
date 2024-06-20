@@ -1,73 +1,65 @@
-# Specify the minimum required version of CMake
-cmake_minimum_required(VERSION 3.13)
+# Set the minimum version of CMake required
+cmake_minimum_required(VERSION 3.29)
 
-# Set environment variables for the toolchains and board type
+# Set environment variables for toolchains and board
 set(ENV{TOOLCHAINS} "swift")
 set(ENV{PICO_BOARD} "pico_w")
-# Set the path to the Pico SDK
-set(ENV{PICO_SDK_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/pico-sdk/")
 
-# Include the Pico SDK CMake import file
-include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+# Set the path to the Pico SDK
+set(PICO_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/pico-sdk)
+
+# Include the Pico SDK
+include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+
+# Set Swift compilation mode and indicate that the Swift compiler works
+set(CMAKE_Swift_COMPILATION_MODE wholemodule)
+set(CMAKE_Swift_COMPILER_WORKS YES)
 
 # Define the project name
-project(swift-pico)
+project(pico-swift)
 
 # Initialize the Pico SDK
 pico_sdk_init()
 
-# Get the path to the Swift compiler using xcrun
-execute_process(
-    COMMAND xcrun -f swiftc
-    OUTPUT_VARIABLE SWIFTC
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+# Enable Swift language support
+enable_language(Swift)
 
-# Define an executable target named 'swift-pico'
-add_executable(swift-pico)
+# Add the executable target and source files
+add_executable(ps Main.swift Credentials.swift Device.swift)
+set_target_properties(ps PROPERTIES LINKER_LANGUAGE CXX)
 
-# Define a custom command to compile Swift code to an object file
-add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/_swiftcode.o
-    COMMAND ${SWIFTC}
-        -target armv6m-none-none-eabi -Xcc -mfloat-abi=soft -Xcc -fshort-enums
-        -Xcc -DCYW43_LWIP
+# Clear default compile options and set them only for C code
+set_target_properties(pico_standard_link PROPERTIES INTERFACE_COMPILE_OPTIONS "")
+target_compile_options(pico_standard_link INTERFACE "$<$<COMPILE_LANGUAGE:C>:SHELL: -ffunction-sections -fdata-sections>")
+
+# Set Swift include directories
+set(SWIFT_INCLUDES)
+foreach(dir ${CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES})
+    string(CONCAT SWIFT_INCLUDES ${SWIFT_INCLUDES} "-Xcc ")
+    string(CONCAT SWIFT_INCLUDES ${SWIFT_INCLUDES} "-I${dir} ")
+endforeach()
+
+# Set Swift compile options
+target_compile_options(ps PUBLIC "$<$<COMPILE_LANGUAGE:Swift>:SHELL:
+        -enable-experimental-feature Embedded
+        -target armv6m-none-none-eabi -Xcc -mfloat-abi=soft -Xcc -fshort-enums -Xfrontend -function-sections
         -Xcc -DPICO_CYW43_ARCH_THREADSAFE_BACKGROUND
-        -Xcc -I$ENV{PICO_SDK_PATH}/lib/lwip/src/include
-        -Xcc -I${CMAKE_CURRENT_LIST_DIR}/include
-        -Xfrontend -function-sections -enable-experimental-feature Embedded -wmo -parse-as-library
-        $$\( echo '$<TARGET_PROPERTY:swift-pico,INCLUDE_DIRECTORIES>' | tr '\;' '\\n' | sed -e 's/\\\(.*\\\)/-Xcc -I\\1/g' \)
-        $$\( echo '${CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES}' | tr ' ' '\\n' | sed -e 's/\\\(.*\\\)/-Xcc -I\\1/g' \)
         -import-bridging-header ${CMAKE_CURRENT_LIST_DIR}/BridgingHeader.h
-        ${CMAKE_CURRENT_LIST_DIR}/*.swift
-        -c -o ${CMAKE_CURRENT_BINARY_DIR}/_swiftcode.o
-    DEPENDS
-        ${CMAKE_CURRENT_LIST_DIR}/BridgingHeader.h
-        ${CMAKE_CURRENT_LIST_DIR}/Main.swift
-)
+        ${SWIFT_INCLUDES}
+    >")
 
-# Create a custom target to build the Swift code
-add_custom_target(swift-pico-swiftcode DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/_swiftcode.o)
-
-# Link the Swift object file with the executable target
-target_link_libraries(swift-pico
-    pico_stdlib
-    hardware_uart
-    hardware_gpio
-    pico_lwip_arch
+# Link libraries to the executable
+target_link_libraries(ps 
+    pico_stdlib 
     pico_cyw43_arch_lwip_threadsafe_background
-    ${CMAKE_CURRENT_BINARY_DIR}/_swiftcode.o
 )
 
-# Include local lwipopts
+# Include directories for the project
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 
-# Ensure the Swift code is compiled before linking the executable
-add_dependencies(swift-pico swift-pico-swiftcode)
-
-# Add extra outputs for the executable (map/bin/hex/uf2)
-pico_add_extra_outputs(swift-pico)
+# Add extra outputs for the Pico board
+pico_add_extra_outputs(ps)
 
 # Enable USB output and disable UART output for the executable
-pico_enable_stdio_usb(swift-pico 1)
-pico_enable_stdio_uart(swift-pico 0)
+pico_enable_stdio_usb(ps 1)
+pico_enable_stdio_uart(ps 0)
