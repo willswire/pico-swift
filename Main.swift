@@ -7,11 +7,12 @@ struct Main {
         while ctr != 0 {
             print("Delaying for console access...")
             device.led.enabled.toggle()
-            device.sleep(duration: 1)
+            sleep(duration: 1)
             ctr -= 1
         }
 
-        device.led.enabled = true
+        device.led.enabled = false
         device.network.connect(ssid: WIFI_SSID, password: WIFI_PASS)
+        device.network.listen()
     }
 }
