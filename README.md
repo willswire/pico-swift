@@ -1,4 +1,4 @@
-# swift-pico
+# pico-swift
 
 this project is a playground for embedded swift on the rasberry pi pico w. the first experiment is to get wifi up and running on the pico, using as little of the c sdk as possible. this may require some reimplementation of the sdk from c in swift native. we'll see how that goes...
 
@@ -24,7 +24,7 @@ cmake --build build
 
 ```sh
 # copy the program to the pico
-cp build/swift-pico.uf2  /Volumes/RPI-RP2
+cp build/ps.uf2  /Volumes/RPI-RP2
 
 # the following usb tty id is specific to me 
 # run `ls /dev/tty.*` on macOS to find yours
