@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.29)
 
 # Set environment variables for toolchains and board
-set(ENV{TOOLCHAINS} "swift")
+set(ENV{TOOLCHAINS} "org.swift.61202408211a")
 set(ENV{PICO_BOARD} "pico_w")
 
 # Set the path to the Pico SDK
@@ -49,8 +49,8 @@ target_compile_options(ps PUBLIC "$<$<COMPILE_LANGUAGE:Swift>:SHELL:
     >")
 
 # Link libraries to the executable
-target_link_libraries(ps 
-    pico_stdlib 
+target_link_libraries(ps
+    pico_stdlib
     pico_cyw43_arch_lwip_threadsafe_background
 )
 
