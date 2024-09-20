@@ -4,16 +4,17 @@ this project is a playground for embedded swift on the rasberry pi pico w. the f
 
 ## build notes
 
-```sh
-# install dependencies
-brew install --cask gcc-arm-embedded 
-brew install cmake ninja
+install the following dependencies (Apple silicon):
+- [Arm GNU Toolchain 13.3](https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-darwin-arm64-arm-none-eabi.pkg)
+- [CMake 3.30.3](https://github.com/Kitware/CMake/releases/download/v3.30.3/cmake-3.30.3-macos-universal.dmg)
+- [Ninja 1.12.1](https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-mac.zip)
 
+```sh
 # set up all git submodules
 git submodule update --init
 
 # set up creds (this file is ignored)
-cp Credentials.swift.tpl Credentials.swift
+cp Credentials.swift.template Credentials.swift
 
 # build commands
 cmake -B build -G Ninja .
@@ -26,7 +27,7 @@ cmake --build build
 # copy the program to the pico
 cp build/ps.uf2  /Volumes/RPI-RP2
 
-# the following usb tty id is specific to me 
+# the following usb tty id is specific to me
 # run `ls /dev/tty.*` on macOS to find yours
 
 screen /dev/tty.usbmodem11101 115200

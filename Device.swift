@@ -31,10 +31,10 @@ public func sleep(duration: Int = 1, unit: SleepUnits = .sec) {
 
 // Define the callback function
 public func callback(
-    arg: Optional<UnsafeMutableRawPointer>,
-    pcb: Optional<UnsafeMutablePointer<udp_pcb>>,
-    p: Optional<UnsafeMutablePointer<pbuf>>,
-    addr: Optional<UnsafePointer<ip4_addr>>,
+    arg: UnsafeMutableRawPointer?,
+    pcb: UnsafeMutablePointer<udp_pcb>?,
+    p: UnsafeMutablePointer<pbuf>?,
+    addr: UnsafePointer<ip4_addr>?,
     port: UInt16
 ) {
     // Function implementation
@@ -58,7 +58,10 @@ struct Network {
 
     public func connect(ssid: StaticString, password: StaticString) {
         print("Connecting to Wi-Fi...")
-        let err = cyw43_arch_wifi_connect_blocking(ssid.utf8Start, password.utf8Start, 0x00400004)
+        //let CYW43_AUTH_WPA2_AES_PSK: UInt32 = 0x0040_0004
+        let CYW43_AUTH_WPA3_SAE_AES_PSK: UInt32 = 0x0100_0004
+        let err = cyw43_arch_wifi_connect_blocking(
+            ssid.utf8Start, password.utf8Start, CYW43_AUTH_WPA3_SAE_AES_PSK)
 
         if err != 0 {
             print("Failed to connect to Wi-Fi!")
